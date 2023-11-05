@@ -10,11 +10,11 @@ Analyz a Code Buddy is a powerful Visual Studio Code extension designed to assis
 
 In this repository, we detail the process through which the Mistral 7B language model was fine-tuned using a specialized dataset sourced from the Algorithms repository on GitHub.
 
-Fine-Tuning Process Overview
+**Fine-Tuning Process Overview**
 
 The fine-tuning was accomplished by employing the QLoRA (Query-specific LORA) technique, a method that efficiently adapts large language models to new tasks with minimal parameter updates.
 
-Steps of Fine-Tuning with QLoRA:
+**Steps of Fine-Tuning with QLoRA:**
 
 1. *Dataset Acquisition*:
    - We procured a custom dataset of algorithmic content from TheAlgoritms GitHub repository, which provided diverse coding problems and their algorithmic solutions.
