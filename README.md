@@ -6,7 +6,7 @@ Analyz a Code Buddy is a powerful Visual Studio Code extension designed to assis
 
 🔗https://huggingface.co/RachitD15673/mistral-finetuned-7B-instruct-manual
 
-Fine-Tuned Mistral 7B Model
+**Fine-Tuned Mistral 7B Model**
 
 In this repository, we detail the process through which the Mistral 7B language model was fine-tuned using a specialized dataset sourced from the Algorithms repository on GitHub.
 
