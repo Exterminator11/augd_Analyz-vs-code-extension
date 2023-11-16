@@ -1,4 +1,5 @@
 const vscode = window.acquireVsCodeApi();
+hljs.highlightAll();
 
 document.getElementById('user-input').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
@@ -37,8 +38,9 @@ document.getElementById('sendButton').addEventListener('click', function() {
     })
     .then(response => response.json())
     .then(data => {
+        console.log('Success:', data);
         analyzingChat.remove();
-        createChat('bot', data.generated_text);
+        createChat('bot', data.text,data.code);
         chatContainer.scrollTop = chatContainer.scrollHeight;
     })
     .catch(error => {
@@ -46,7 +48,7 @@ document.getElementById('sendButton').addEventListener('click', function() {
     });
 });
 
-function createChat(sender,text){
+function createChat(sender,text,code){
     const chat = document.createElement('div');
     chat.classList.add('chat');
     const img = document.createElement('img');
@@ -60,20 +62,33 @@ function createChat(sender,text){
     chat.appendChild(img);
 
     const p = document.createElement('p');
+    const pre=document.createElement('pre'); // tag that highlight js needs
+    const code1=document.createElement('code'); // Tag that highlight js needs
+    // This should be the structure
+    // <pre>
+    //     <code>
+    //         // Code here
+    //     </code>
+    // </pre>
+    const con=document.createElement('div'); // this you can remove
+    pre.appendChild(code1);
+    con.appendChild(pre);
 
     if(sender === 'user'){
         p.textContent = text;
     }
     else{
         p.textContent = text;
+        code1.textContent=code;
     }
+
 
     if(text === 'Analyzing'){
         const span = document.createElement('span');
         span.textContent = '...';
         p.appendChild(span);
     }
-
+    chat.appendChild(con);
     chat.appendChild(p);
 
     // Add the new chat message to the chat section

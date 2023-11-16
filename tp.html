@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<!-- and it's easy to individually load additional languages -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+
+<script>hljs.highlightAll();</script>
+<body>
+    <pre>
+        <code>
+            def linear_search(arr, x):
+                for i in range(len(arr)):
+                    if arr[i] == x:
+                        return i
+                return -1
+
+            arr = [1, 2, 3, 4, 5]
+            x = 3
+            index = linear_search(arr, x)
+            print(index)  # Output: 2
+        </code>
+    </pre>
+</body>
+</html>
