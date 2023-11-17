@@ -1,0 +1,49 @@
+{
+  "name": "analyz",
+  "displayName": "Analyz",
+  "description": "This VSCode extension enhances the coding experience by empowering developers to create custom code assistance tools, offering advanced autocomplete suggestions for efficient code writing, and enabling natural language to code conversion for intuitive expression of coding concepts.",
+  "version": "0.0.1",
+  "publisher": "LSrujan",
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "icon": "media/bot.png",
+  "activationEvents": [
+    "onLanguage:java",
+    "onLanguage:python",
+    "onCommand:extension.openChat",
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+          "command": "extension.openChat",
+          "title": "Ask Analyz"
+      }
+    ]    
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.84.0",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
+    "glob": "^10.3.3",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.2",
+    "@vscode/test-electron": "^2.3.4"
+  }
+}

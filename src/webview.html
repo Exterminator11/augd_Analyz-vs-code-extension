@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="${cssUri}" rel="stylesheet">
+    <title>LLM Powered Extension</title>
+
+     <!-- links for highlight js -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+ 
+     <!-- and it's easy to individually load additional languages -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="title">
+            <img src="https://cdn-icons-png.flaticon.com/128/2593/2593635.png" alt="">
+            <h1>Analyz</h1>
+        </div>
+        
+        <div class="chat-section">
+            <!-- <div class="chat">
+                <img src="https://cdn-icons-png.flaticon.com/128/2593/2593635.png" alt="df">
+                <p>Hello there! I am Analyz, your personal coding assistant. How can I help you today?</p>
+            </div> -->
+
+        <div class="input-section">
+            <input id="user-input" type="text" placeholder="Type your message here...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <script src="${scriptUri}"></script>
+</body>
+</html>
