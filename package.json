@@ -21,10 +21,14 @@
   "contributes": {
     "commands": [
       {
-          "command": "extension.openChat",
-          "title": "Ask Analyz"
+        "command": "extension.openChat",
+        "title": "Ask Analyz"
+      },
+      {
+        "command": "extension.flowchartExplanation",
+        "title": "Understand Using Flowchart"
       }
-    ]    
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -45,5 +49,8 @@
     "mocha": "^10.2.0",
     "typescript": "^5.2.2",
     "@vscode/test-electron": "^2.3.4"
+  },
+  "dependencies": {
+    "play-sound": "^1.1.6"
   }
 }

@@ -5,6 +5,10 @@ from langchain import HuggingFaceHub, PromptTemplate, LLMChain
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferWindowMemory
 import re
+from gtts import gTTS
+from io import BytesIO
+import io
+from fastapi.responses import StreamingResponse
 
 app = FastAPI()
 
@@ -80,7 +84,6 @@ async def getComplexity(request_data: dict):
     
     response = mistral_chain.run(prompt)
     return {"generated_text": response}
-
 
 # Configure CORS
 app.add_middleware(

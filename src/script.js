@@ -1,6 +1,8 @@
 const vscode = window.acquireVsCodeApi();
 
 let workspacePath = "";
+let isPlay = false;
+
 // Handle the message inside the webview
 window.addEventListener('message', event => {
     console.log("Received message from extension:", event.data);
@@ -95,6 +97,26 @@ async function newFile(code){
     });
 }
 
+async function getSpeech(textInput){   
+
+    var text = decodeURIComponent(textInput);
+
+    // Create a new SpeechSynthesisUtterance instance
+    var utterance = new SpeechSynthesisUtterance(text);
+
+    // Use the default speech synthesis voice
+    utterance.voice = speechSynthesis.getVoices()[0];
+    speechSynthesis.speak(utterance);   
+    // if(!isPlay){
+    //     speechSynthesis.speak(utterance);
+    //     isPlay = true;
+    // }
+    // else{
+    //     speechSynthesis.pause();
+    //     isPlay = false;
+    // }
+}
+
 // Creating Chat 
 function createChat(sender,text,code){
     const chat = document.createElement('div');
@@ -150,6 +172,7 @@ function createChat(sender,text,code){
     <div class="icons">
         <img onclick="copyCode(decodeURIComponent('${encodeURIComponent(code)}'))" src="https://cdn-icons-png.flaticon.com/128/3719/3719119.png" alt="copy">
         <img onclick="newFile(decodeURIComponent('${encodeURIComponent(code)}'))" src="https://cdn-icons-png.flaticon.com/128/7163/7163714.png" alt="new file">
+        <img onclick="getSpeech('${encodeURIComponent(text)}')" src="https://cdn-icons-png.flaticon.com/128/2326/2326200.png" alt="voiceover">
     </div>
 `;
 
