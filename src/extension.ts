@@ -114,7 +114,7 @@ function getFunctionBody(document: vscode.TextDocument, functionName: string): s
     const text = document.getText();
     let functionCode = "";
 
-    if(document.languageId == 'java'){
+    if(document.languageId === 'java'){
         const functionStartRegex = new RegExp(`\\b(?:public\\s+static\\s+void|public\\s+static\\s+int|String|boolean|char|float|double|long|short|byte)\\b\\s+${functionName}\\s*\\(.*\\)\\s*\\{`, 'gm');
         let match = functionStartRegex.exec(text);
         if (match) {
@@ -138,7 +138,7 @@ function getFunctionBody(document: vscode.TextDocument, functionName: string): s
         }
     }
 
-    else if(document.languageId == "python"){
+    else if(document.languageId === "python"){
         const functionStartRegex = new RegExp(`def\\s+${functionName}\\s*\\(.*\\):`, 'gm');
         let match = functionStartRegex.exec(text);
         if (match) {
@@ -218,7 +218,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         panel.webview.onDidReceiveMessage(
             message => {
-                console.log(message)
+                console.log(message);
                 switch (message.command) {
                     case 'alert':
                         vscode.window.showInformationMessage(message.text);
@@ -300,11 +300,13 @@ export function activate(context: vscode.ExtensionContext) {
                         vscode.window.showInputBox().then(input => {
                             // Use the input here
                             vscode.window.showInformationMessage("New file content: " + input);
-                            const code = message.code 
+                            const code = message.code ;
 
                             // creating the file
                             fs.writeFile(`${workspaceFolders![0].uri.fsPath}/${input}`, code, function (err) {
-                                if (err) throw err;
+                                if (err) {
+                                    throw err;
+                                }
                                 console.log('Saved!');
                             });
                         });
@@ -320,7 +322,7 @@ export function activate(context: vscode.ExtensionContext) {
             panel.webview.postMessage({ type: 'chat', text: 'Hello there! I am Analyz, your personal coding assistant. How can I help you today?'});
         }
         else{
-            vscode.window.showInformationMessage("Chat already exists not inserting text")
+            vscode.window.showInformationMessage("Chat already exists not inserting text");
         }
         
         // sending the current workspace files to script.js

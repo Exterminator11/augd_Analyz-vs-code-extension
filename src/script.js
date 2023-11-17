@@ -3,7 +3,7 @@ const vscode = window.acquireVsCodeApi();
 let workspacePath = "";
 // Handle the message inside the webview
 window.addEventListener('message', event => {
-    console.log("Received message from extension:", event.data)
+    console.log("Received message from extension:", event.data);
 
     switch (event.data.type) {
         case 'files':
