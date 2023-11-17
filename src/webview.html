@@ -3,205 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="${cssUri}" rel="stylesheet">
     <title>LLM Powered Extension</title>
 
-    <style>
-
-        @import url('https://fonts.googleapis.com/css2?family=Inder&display=swap');
-
-        *{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Inder, "sans-serif";
-        }
-
-        body{
-            background-color: rgb(49, 49, 49);
-            height: 100vh;
-            width: 75vw;
-            padding-block:50px 50px;
-            margin-inline:auto;
-        }
-
-        .container{
-            margin: 0 auto;
-            padding: 20px;
-            color: white;
-            font-family: sans-serif;
-        }
-
-        .title{
-            display: flex;
-            align-items: center;
-        }
-
-        .title img{
-            height: 50px;
-            margin-right: 20px;
-        }
-
-        h1{
-            font-size: 2rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        p{
-            font-size: 1rem;
-            font-weight: 400;
-            line-height: 1.5;
-            text-align: justify;
-        }
-
-        .chat-section{
-            margin-block:20px;
-            height:70vh;
-            overflow: auto;
-            padding-top:0px;
-        }
-
-        .chat-section::-webkit-scrollbar {
-            width: 3px;
-        }
-
-        .chat-section::-webkit-scrollbar-track {
-            background: #888; 
-        }
-
-        .chat-section::-webkit-scrollbar-thumb {
-            background: #fff; 
-        }
-
-        .chat-section::-webkit-scrollbar-thumb:hover {
-            background: #555; 
-        }
-
-        .chat{
-            display: flex;
-            align-items: flex-start;
-            background-color: rgb(73, 72, 72);
-            padding: 3px 10px;
-            border-radius: 10px;
-            margin-block:25px;
-            width:98%;
-        }
-
-        .chat img{
-            border-radius: 50%;
-            margin-right: 10px;
-            height:25px;
-            margin-top:7px;
-        }
-
-        .chat p{
-            font-size: 1rem;
-            font-weight: 400;
-            line-height: 1.5;
-            text-align: justify;
-            padding: 10px;
-            padding-left: 5px;
-            border-radius: 10px;
-            width:100%;
-            white-space:pre-wrap;
-            display: flex;
-        }
-
-        .input-section{
-            position: fixed;
-            bottom: 15px;
-            width: 70%;
-            display: flex;
-            margin-inline: auto;
-            gap: 20px;
-        }
-
-        .input-section input{
-            width: 100%;
-            height: 50px;
-            border-radius: 10px;
-            border: none;
-            padding-inline: 15px;
-            font-size:16px;
-        }
-
-        .input-section button{
-            width: 15%;
-            background: white;
-            border-radius: 10px;
-        }
-        
-        .dot-flashing {
-            position: relative;
-            width: 2px;
-            margin-left:100px;
-            height: 2px;
-            border-radius: 5px;
-            background-color: #ffffff;
-            color: #ffffff;
-            animation: dot-flashing 1s infinite linear alternate;
-            animation-delay: 0.5s;
-            }
-            .dot-flashing::before, .dot-flashing::after {
-            content: "";
-            display: inline-block;
-            position: absolute;
-            top: 0;
-            }
-            .dot-flashing::before {
-            left: -15px;
-            width: 2px;
-            height: 2px;
-            border-radius: 5px;
-            background-color: #ffffff;
-            color: #ffffff;
-            animation: dot-flashing 1s infinite alternate;
-            animation-delay: 0s;
-            }
-            .dot-flashing::after {
-            left: 15px;
-            width: 2px;
-            height: 2px;
-            border-radius: 5px;
-            background-color: #ffffff;
-            color: #ffffff;
-            animation: dot-flashing 1s infinite alternate;
-            animation-delay: 1s;
-            }
-
-            @keyframes dot-flashing {
-            0% {
-                background-color: #ffffff;
-            }
-            50%, 100% {
-                background-color: rgba(255, 255, 255, 0.2);
-            }
-            }
-    </style>
-    <!-- links for highlight js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
-    <!-- and it's easy to individually load additional languages -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
-
-    <!-- <script>hljs.highlightAll();</script> -->
+     <!-- links for highlight js -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+ 
+     <!-- and it's easy to individually load additional languages -->
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
 </head>
 <body>
+    
     <div class="container">
-        <!-- <h1>Analyz, your code buddy</h1> -->
         <div class="title">
             <img src="https://cdn-icons-png.flaticon.com/128/2593/2593635.png" alt="">
             <h1>Analyz</h1>
         </div>
-        <!-- <p>Welcome to Analyz! 🚀 Your personal coding assistant powered by advanced Language Model technology (LLM). This cutting-edge chatbot is designed to provide comprehensive code analysis and clear explanations, helping you understand the intricate nuances of any programming language with ease. 💻🔍 From interpreting complex algorithms to elucidating intricate lines of code, CodeBot is your reliable companion for all coding inquiries. 💡💬 Experience hassle-free debugging, insightful coding tips, and real-time code breakdowns, making your coding journey seamless and efficient. 💪 Let's simplify coding together</p> -->
         
         <div class="chat-section">
-            <div class="chat">
+            <!-- <div class="chat">
                 <img src="https://cdn-icons-png.flaticon.com/128/2593/2593635.png" alt="df">
                 <p>Hello there! I am Analyz, your personal coding assistant. How can I help you today?</p>
-            </div>
-        </div>
+            </div> -->
 
         <div class="input-section">
             <input id="user-input" type="text" placeholder="Type your message here...">

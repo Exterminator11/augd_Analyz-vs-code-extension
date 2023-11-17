@@ -1,6 +1,38 @@
 const vscode = window.acquireVsCodeApi();
-hljs.highlightAll();
 
+let workspacePath = "";
+// Handle the message inside the webview
+window.addEventListener('message', event => {
+    console.log("Received message from extension:", event.data)
+
+    switch (event.data.type) {
+        case 'files':
+            const filesArray = event.data.files;
+            workspacePath = event.data.workspacePath;
+            break;
+
+        case 'algorithmComplexity':
+            // vscode.window.showInformationMessage("Starting a complexity analysis.");
+            const code = event.data.code;
+            const functionName = event.data.functionName;
+            const language = event.data.language;
+            complexityChat(functionName, code, language);
+            break;
+
+        case 'chat':
+            // vscode.window.showInformationMessage("Starting a normal chat with the bot.");
+            createChat('bot', event.data.text);
+            break;
+
+        case 'scrollDown':
+            // vscode.window.showInformationMessage("Auto Scrolling down existing chat.");
+            const chatContainer = document.getElementsByClassName('chat-section')[0];
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            break;
+    } 
+});
+
+// Handling Enter Message
 document.getElementById('user-input').addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         event.preventDefault();
@@ -8,11 +40,13 @@ document.getElementById('user-input').addEventListener('keydown', function(event
     }
 });
 
+// Handling Send Button
 document.getElementById('sendButton').addEventListener('click', function() {
     const inputValue = document.getElementById('user-input').value;
 
     if(inputValue.trim() === '') {
-        // Send a message to the extension
+
+        // Sending a message back to the extension
         vscode.postMessage({ command: 'alert', text: 'Please enter a message.'});
         return;
     }
@@ -22,11 +56,11 @@ document.getElementById('sendButton').addEventListener('click', function() {
     chatContainer.scrollTop = chatContainer.scrollHeight;
     document.getElementById('user-input').value = '';
 
-    // Create a chat message with the text "Analyzing..."
     const analyzingChat = createChat('bot', 'Analyzing');
     chatContainer.scrollTop = chatContainer.scrollHeight;
     
-
+    console.log('Sending message to analyz:', inputValue);
+    // fetch('https://api-aknalyz.onrender.com/generate_text', {
     fetch('http://localhost:8000/generate_text', {
         method: 'POST',
         headers: {
@@ -38,16 +72,30 @@ document.getElementById('sendButton').addEventListener('click', function() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Success:', data);
         analyzingChat.remove();
-        createChat('bot', data.text,data.code);
+        createChat('bot', data.text.trim(),data.code.trim());
         chatContainer.scrollTop = chatContainer.scrollHeight;
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error from analyz:', error);
     });
 });
 
+function copyCode(code){    
+    console.log("code to be copied:" + code);
+    navigator.clipboard.writeText(code);
+}
+
+async function newFile(code){
+    // creating a new file in workspacePath 
+    console.log("Sent Message for new file")
+    vscode.postMessage({
+        command: 'newFile',
+        code: code
+    });
+}
+
+// Creating Chat 
 function createChat(sender,text,code){
     const chat = document.createElement('div');
     chat.classList.add('chat');
@@ -62,36 +110,102 @@ function createChat(sender,text,code){
     chat.appendChild(img);
 
     const p = document.createElement('p');
+
+    // structuring the code for highlight.js
     const pre=document.createElement('pre'); // tag that highlight js needs
     const code1=document.createElement('code'); // Tag that highlight js needs
-    // This should be the structure
+    // This should be the structure of the code
     // <pre>
     //     <code>
-    //         // Code here
+    //         Code here
     //     </code>
     // </pre>
-    const con=document.createElement('div'); // this you can remove
-    pre.appendChild(code1);
-    con.appendChild(pre);
 
-    if(sender === 'user'){
-        p.textContent = text;
+    if(code && code.length > 0){
+        console.log("code:" + code);
+        const con=document.createElement('div'); // this you can remove
+        pre.appendChild(code1);
+        con.appendChild(pre);
+    
+        if(sender === 'user'){
+            p.textContent = text;
+        }
+        else{
+            p.textContent = text;
+            code1.textContent = code;
+        }
+    
+        if(text === 'Analyzing'){
+            const span = document.createElement('span');
+            span.textContent = '...';
+            p.appendChild(span);
+        }
+    
+        con.appendChild(p);
+        chat.appendChild(con);
+        
+        iconsContainer = document.createElement('div');
+
+        iconsContainer.innerHTML = `
+    <div class="icons">
+        <img onclick="copyCode(decodeURIComponent('${encodeURIComponent(code)}'))" src="https://cdn-icons-png.flaticon.com/128/3719/3719119.png" alt="copy">
+        <img onclick="newFile(decodeURIComponent('${encodeURIComponent(code)}'))" src="https://cdn-icons-png.flaticon.com/128/7163/7163714.png" alt="new file">
+    </div>
+`;
+
+        chat.appendChild(iconsContainer);
+        document.querySelector('.chat-section').appendChild(chat);
+        return chat;
     }
     else{
-        p.textContent = text;
-        code1.textContent=code;
+        if(sender === 'user'){
+            p.textContent = text;
+        }
+        else{
+            p.textContent = text;
+        }
+    
+        if(text === 'Analyzing'){
+            const span = document.createElement('span');
+            span.textContent = '...';
+            p.appendChild(span);
+        }
+    
+        chat.appendChild(p);
+    
+        document.querySelector('.chat-section').appendChild(chat);
+        return chat;
     }
+}
 
+// complexity analysis chat
+function complexityChat(functionName, functionCode, language){
 
-    if(text === 'Analyzing'){
-        const span = document.createElement('span');
-        span.textContent = '...';
-        p.appendChild(span);
-    }
-    chat.appendChild(con);
-    chat.appendChild(p);
+    const chatContainer = document.getElementsByClassName('chat-section')[0];
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    // Add the new chat message to the chat section
-    document.querySelector('.chat-section').appendChild(chat);
-    return chat;
+    const analyzingChat = createChat('bot', 'Analyzing');
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    // fetch('https://api-analyz.onrender.com/generate_text', {
+    fetch('http://localhost:8000/algorithm_complexity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            function_name: functionName,
+            programming_language: language,
+            function_code: functionCode
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        analyzingChat.remove();
+        createChat('bot', functionCode + '\n\n' + data.generated_text.trim());
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    })
+    .catch(error => {
+        console.error('Error from analyz:', error);
+    });
 }
