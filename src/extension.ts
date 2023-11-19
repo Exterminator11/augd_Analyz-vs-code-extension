@@ -2,30 +2,32 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// function insertCodeLensAboveFunctions(document: vscode.TextDocument) {
-//     const codeLenses: vscode.CodeLens[] = [];
-//     const firstLine = document.lineAt(0);
+function insertCodeLensAboveFunctions(document: vscode.TextDocument) {
+    const codeLenses: vscode.CodeLens[] = [];
+    const firstLine = document.lineAt(0);
     
-//     const command: vscode.Command = {
-//         title: 'Complexity',
-//         command: 'extension.GetComplexity',
-//         arguments: [firstLine.text]
-//     };
+    const text=document.getText();
 
-//     const range = new vscode.Range(firstLine.range.start, firstLine.range.start); // CodeLens at the start of the first line
+    const command: vscode.Command = {
+        title: 'Convert code',
+        command: 'extension.ConvertCode',
+        arguments: [text]
+    };
 
-//     const codeLens = new vscode.CodeLens(range, command);
-//     codeLenses.push(codeLens);
+    const range = new vscode.Range(firstLine.range.start, firstLine.range.start); // CodeLens at the start of the first line
 
-//     // Replace the existing CodeLenses with the new one
-//     vscode.languages.registerCodeLensProvider(
-//         { scheme: 'file', language: document.languageId },
-//         {
-//             provideCodeLenses: () => codeLenses,
-//             resolveCodeLens: (codeLens: vscode.CodeLens) => codeLens
-//         }
-//     );
-// }
+    const codeLens = new vscode.CodeLens(range, command);
+    codeLenses.push(codeLens);
+
+    // Replace the existing CodeLenses with the new one
+    vscode.languages.registerCodeLensProvider(
+        { scheme: 'file', language: document.languageId },
+        {
+            provideCodeLenses: () => codeLenses,
+            resolveCodeLens: (codeLens: vscode.CodeLens) => codeLens
+        }
+    );
+}
 
 // adding all code lenses
 
@@ -176,8 +178,44 @@ export function activate(context: vscode.ExtensionContext) {
     // Start watching for document changes
     functionCodeLensProvider.startWatchingForDocumentChanges();
 
-    // Register CodeLens provider
+    // Register CodeLens provider 
     context.subscriptions.push(vscode.languages.registerCodeLensProvider(['java', 'python'], functionCodeLensProvider));
+    
+    // CODE CONVERTER
+    context.subscriptions.push(vscode.commands.registerCommand('extension.ConvertCode', (text:string) => {
+        
+        const panel = vscode.window.createWebviewPanel(
+            "Convert Code",
+            "Convert Code",
+            vscode.ViewColumn.One,
+            {
+                enableScripts: true,
+                localResourceRoots: [
+                    vscode.Uri.file(path.join(context.extensionPath, 'src')),
+                    vscode.Uri.file(path.join(context.extensionPath, 'media'))
+                ]
+            }
+        )
+        
+        panel.webview.html = `<iframe src="http://localhost:8502" frameborder="0" style="width:100%; height:100vh"></iframe>`;
+    }));
+
+    //FLOWCHART
+    context.subscriptions.push(vscode.commands.registerCommand('extension.flowchartExplanation', (text:string) => {
+        
+        const panel = vscode.window.createWebviewPanel(
+            "Flowchart",
+            "FLowchart explanantion",
+            vscode.ViewColumn.One,
+            {
+                enableScripts: true,
+            }
+        )
+        
+        // panel.webview.html = `<iframe src="https://analyz-roadmap-generator.streamlit.app/ " frameborder="0" style="width:100%; height:100vh"></iframe>`;
+        // panel.webview.html = `<h1>Hello</h1>`;
+        panel.webview.html = `<iframe src="http://localhost:8501" frameborder="0" style="width:100%; height:100vh"></iframe>`;
+    }));
 
     // Get Complexity command
     context.subscriptions.push(vscode.commands.registerCommand('extension.GetComplexity', (document: vscode.TextDocument, functionName: string, language: string) => {
@@ -357,3 +395,6 @@ export function activate(context: vscode.ExtensionContext) {
 // }
 
 export function deactivate() {}
+
+
+insertCodeLensAboveFunctions(vscode.window.activeTextEditor!.document)

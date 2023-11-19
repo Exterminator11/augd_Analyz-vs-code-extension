@@ -95,6 +95,25 @@ async function newFile(code){
     });
 }
 
+function getSpeech(text){
+      // Create a new SpeechSynthesisUtterance instance
+      var utterance = new SpeechSynthesisUtterance(decodeURIComponent(text));
+
+      // Use the default speech synthesis voice
+      utterance.voice = speechSynthesis.getVoices()[0];
+      utterance.rate = parseFloat(0.8);
+      let isPlay=true
+
+      // Speak the text
+      if(isPlay){
+        isPlay=true
+        speechSynthesis.speak(utterance);
+      }
+      else{
+        isPlay=false;
+        speechSynthesis.pause();
+      }
+}
 // Creating Chat 
 function createChat(sender,text,code){
     const chat = document.createElement('div');
@@ -150,6 +169,7 @@ function createChat(sender,text,code){
     <div class="icons">
         <img onclick="copyCode(decodeURIComponent('${encodeURIComponent(code)}'))" src="https://cdn-icons-png.flaticon.com/128/3719/3719119.png" alt="copy">
         <img onclick="newFile(decodeURIComponent('${encodeURIComponent(code)}'))" src="https://cdn-icons-png.flaticon.com/128/7163/7163714.png" alt="new file">
+        <img onclick="getSpeech('${encodeURIComponent(text)}')" src="https://cdn-icons-png.flaticon.com/128/2326/2326200.png" alt="voiceover">
     </div>
 `;
 

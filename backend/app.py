@@ -1,14 +1,15 @@
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from langchain import HuggingFaceHub, PromptTemplate, LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.llms import HuggingFaceHub
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferWindowMemory
 import re
 
 app = FastAPI()
 
-os.environ["HUGGINGFACE_HUB_TOKEN"] = "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"
+# os.environ["HUGGINGFACE_HUB_TOKEN"] = "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"
 model_id = "mistralai/Mistral-7B-Instruct-v0.1"
 
 # ! CHANGED TEMPLATE FOR CONTEXT
@@ -29,7 +30,7 @@ prompt = PromptTemplate(template=template, input_variables=["history", "question
 
 
 mistral_llm = HuggingFaceHub(
-    huggingfacehub_api_token=os.environ["HUGGINGFACE_HUB_TOKEN"],
+    huggingfacehub_api_token="put your token here",
     repo_id=model_id,
     model_kwargs={"max_new_tokens": 500, "temperature": 0.2},
 )
@@ -66,10 +67,11 @@ async def generate_text(request_data: dict):
             status_code=400, detail="Question is missing in the request."
         )
 
-    try:
-        response = mistral_chain.run(temp)
-    except:
-        response = "Please try again."
+    # try:
+    #     response = mistral_chain.run(temp)
+    # except:
+    #     response = "Please try again."
+    response = mistral_chain.run(temp)
     code, text = get_code_and_text(response)
     return {"text": text, "code": code}
 
