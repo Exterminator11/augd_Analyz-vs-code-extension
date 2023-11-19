@@ -1,9 +1,11 @@
 const vscode = window.acquireVsCodeApi();
 
 let workspacePath = "";
+let isPlay = false;
+
 // Handle the message inside the webview
 window.addEventListener('message', event => {
-    console.log("Received message from extension:", event.data)
+    console.log("Received message from extension:", event.data);
 
     switch (event.data.type) {
         case 'files':
@@ -93,6 +95,26 @@ async function newFile(code){
         command: 'newFile',
         code: code
     });
+}
+
+async function getSpeech(textInput){   
+
+    var text = decodeURIComponent(textInput);
+
+    // Create a new SpeechSynthesisUtterance instance
+    var utterance = new SpeechSynthesisUtterance(text);
+
+    // Use the default speech synthesis voice
+    utterance.voice = speechSynthesis.getVoices()[0];
+    speechSynthesis.speak(utterance);   
+    // if(!isPlay){
+    //     speechSynthesis.speak(utterance);
+    //     isPlay = true;
+    // }
+    // else{
+    //     speechSynthesis.pause();
+    //     isPlay = false;
+    // }
 }
 
 function getSpeech(text){
