@@ -14,10 +14,10 @@ function insertCodeLensAboveFunctions(document: vscode.TextDocument) {
         arguments: [text]
     };
 
-    const range = new vscode.Range(firstLine.range.start, firstLine.range.start); // CodeLens at the start of the first line
+//     const range = new vscode.Range(firstLine.range.start, firstLine.range.start); // CodeLens at the start of the first line
 
-    const codeLens = new vscode.CodeLens(range, command);
-    codeLenses.push(codeLens);
+//     const codeLens = new vscode.CodeLens(range, command);
+//     codeLenses.push(codeLens);
 
     // Replace the existing CodeLenses with the new one
     vscode.languages.registerCodeLensProvider(
@@ -33,6 +33,7 @@ function insertCodeLensAboveFunctions(document: vscode.TextDocument) {
 
 let currentPanel: vscode.WebviewPanel | undefined;
 let createChat = true;
+insertCodeLensAboveFunctions(vscode.window.activeTextEditor!.document);
 
 function getOrCreateWebviewPanel(
     viewId: string,
@@ -41,7 +42,6 @@ function getOrCreateWebviewPanel(
 ): vscode.WebviewPanel {
 
     if (currentPanel) {
-        vscode.window.showInformationMessage('Getting existing panel');
         currentPanel.reveal();
         currentPanel.webview.postMessage({type: 'scrollDown'});
         createChat = false;
@@ -49,7 +49,6 @@ function getOrCreateWebviewPanel(
     }
 
     createChat = true;
-    vscode.window.showInformationMessage('Creating new panel');
     currentPanel = vscode.window.createWebviewPanel(
         viewId,
         title,
@@ -116,7 +115,7 @@ function getFunctionBody(document: vscode.TextDocument, functionName: string): s
     const text = document.getText();
     let functionCode = "";
 
-    if(document.languageId == 'java'){
+    if(document.languageId === 'java'){
         const functionStartRegex = new RegExp(`\\b(?:public\\s+static\\s+void|public\\s+static\\s+int|String|boolean|char|float|double|long|short|byte)\\b\\s+${functionName}\\s*\\(.*\\)\\s*\\{`, 'gm');
         let match = functionStartRegex.exec(text);
         if (match) {
@@ -140,7 +139,7 @@ function getFunctionBody(document: vscode.TextDocument, functionName: string): s
         }
     }
 
-    else if(document.languageId == "python"){
+    else if(document.languageId === "python"){
         const functionStartRegex = new RegExp(`def\\s+${functionName}\\s*\\(.*\\):`, 'gm');
         let match = functionStartRegex.exec(text);
         if (match) {
@@ -219,7 +218,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Get Complexity command
     context.subscriptions.push(vscode.commands.registerCommand('extension.GetComplexity', (document: vscode.TextDocument, functionName: string, language: string) => {
-        vscode.window.showInformationMessage(`Getting complexity clicked for function: ${functionName}`);
 
         const functionBody = getFunctionBody(document, functionName);
         
@@ -256,17 +254,10 @@ export function activate(context: vscode.ExtensionContext) {
 
         panel.webview.onDidReceiveMessage(
             message => {
-                console.log(message)
+                console.log(message);
                 switch (message.command) {
                     case 'alert':
                         vscode.window.showInformationMessage(message.text);
-                        return;
-                    
-                    case 'newFile':
-                        vscode.window.showInputBox().then(input => {
-                            // Use the input here
-                            vscode.window.showInformationMessage("New file content: " + input);
-                        });
                         return;
                 }
             },
@@ -276,6 +267,59 @@ export function activate(context: vscode.ExtensionContext) {
 
         // initiating the Algorithm Complexity chat
         panel.webview.postMessage({ type: 'algorithmComplexity', functionName: `${functionName}`, code: `${functionBody}`, language: `${language}`});
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('extension.translateCode', (text: string) => {
+
+        // adding text to clipboard
+        vscode.env.clipboard.writeText(text);
+
+        // create new pannel
+        let panel = vscode.window.createWebviewPanel(
+            'codeConvertor', // Identifies the type of the webview. Used internally
+            'Code Convertor', // Title of the panel displayed to the user
+            vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+            {
+                enableScripts: true,
+                localResourceRoots: [
+                    vscode.Uri.file(path.join(context.extensionPath, 'src')),
+                    vscode.Uri.file(path.join(context.extensionPath, 'media'))
+                ]
+            }
+        );
+
+        panel.iconPath = {
+            light: vscode.Uri.file(path.join(context.extensionPath, 'media', 'bot.png')),
+            dark: vscode.Uri.file(path.join(context.extensionPath, 'media', 'bot.png'))
+        };
+        
+        // And set its HTML content
+        panel.webview.html = `<iframe src="https://analyz-code-converter.streamlit.app/" frameborder="0" style="width:100%; height:100vh;"></iframe>`;
+    }));
+
+    // extension.flowchartExplanation 
+    context.subscriptions.push(vscode.commands.registerCommand('extension.flowchartExplanation', () => {
+
+        let panel = vscode.window.createWebviewPanel(
+            'flowchartExplanation', // Identifies the type of the webview. Used internally
+            'Flowchart Explanation', // Title of the panel displayed to the user
+            vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+            {
+                enableScripts: true,
+                localResourceRoots: [
+                    vscode.Uri.file(path.join(context.extensionPath, 'src')),
+                    vscode.Uri.file(path.join(context.extensionPath, 'media'))
+                ]
+            }
+        );
+
+        panel.iconPath = {
+            light: vscode.Uri.file(path.join(context.extensionPath, 'media', 'bot.png')),
+            dark: vscode.Uri.file(path.join(context.extensionPath, 'media', 'bot.png'))
+        };
+
+        panel.webview.html = `<iframe src="https://www.example.com" frameborder="0" style="width:100%; height:100vh;"></iframe>`
+
     }));
 
     // Open Chat command
@@ -337,12 +381,13 @@ export function activate(context: vscode.ExtensionContext) {
                     case 'newFile':
                         vscode.window.showInputBox().then(input => {
                             // Use the input here
-                            vscode.window.showInformationMessage("New file content: " + input);
-                            const code = message.code 
+                            const code = message.code ;
 
                             // creating the file
                             fs.writeFile(`${workspaceFolders![0].uri.fsPath}/${input}`, code, function (err) {
-                                if (err) throw err;
+                                if (err) {
+                                    throw err;
+                                }
                                 console.log('Saved!');
                             });
                         });
@@ -357,42 +402,15 @@ export function activate(context: vscode.ExtensionContext) {
         if(createChat){
             panel.webview.postMessage({ type: 'chat', text: 'Hello there! I am Analyz, your personal coding assistant. How can I help you today?'});
         }
-        else{
-            vscode.window.showInformationMessage("Chat already exists not inserting text")
-        }
         
         // sending the current workspace files to script.js
         panel.webview.postMessage({ type: 'files', files: filesArray, workspacePath: workspaceFolders![0].uri.fsPath});
     });
 
+
     context.subscriptions.push(disposable);
 }
 
-// ! TO IMPLEMENT
-// async function getComplexity(functionName: string): Promise<{time: string, space: string}> {
-//     return new Promise((resolve, reject) => {
-//         // Create a message to send
-//         const message = {
-//             command: 'getComplexity',
-//             functionName: functionName
-//         };
-
-//         // Send the message to script.js
-//         postMessage(message);
-
-//         // Listen for a response
-//         window.addEventListener('message', event => {
-//             const message = event.data; // The JSON data our extension sent
-
-//             if (message.command === 'complexityResponse') {
-//                 resolve({
-//                     time: message.timeComplexity,
-//                     space: message.spaceComplexity
-//                 });
-//             }
-//         });
-//     });
-// }
 
 export function deactivate() {}
 
